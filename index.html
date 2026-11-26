@@ -51,6 +51,8 @@ textarea{min-height:64px;resize:vertical}
 .area{display:flex;align-items:baseline;justify-content:space-between;margin:24px 0 8px;gap:10px}
 .area span{color:var(--mute);font-size:14px}
 .q .txt{font-size:17px;font-weight:600}
+.exp{margin:8px 0 0;padding:10px 12px;border-radius:10px;background:var(--steel);font-size:15px;line-height:1.5}
+.exp b{display:block;font-size:13px;color:var(--mute);margin-bottom:2px}
 .q.done{border-left:6px solid var(--st)}
 .hint{margin:6px 0 0;font-size:14px;color:var(--mute)}
 details.hint summary{cursor:pointer;min-height:32px;display:flex;align-items:center;font-weight:600}
@@ -1224,6 +1226,81 @@ const PROYECTOS = [
      ['C1', '¿La base local del celular está cifrada? ¿Cómo se autentican los vacunadores?', 'Cifrado (por ejemplo SQLCipher) y autenticación con roles.'],
      ['C7', '¿El mecanismo de sincronización podría reutilizarse en otra app offline?', 'Desacoplado del dominio de vacunación.']] },
 ];
+
+/* Explicación en palabras simples de cada pregunta (mismo orden que en cada proyecto; COMUNES al final) */
+const EXPLICA = {
+ P1: [
+  'Busca saber si el problema es real: si hablaron con personas que alquilan casas o apartamentos por su cuenta, sin inmobiliaria (arrendador informal). Si no hablaron con ninguno, el problema es supuesto.',
+  'Toda solución compite con algo que ya existe: Excel, cuadernos o programas de inmobiliarias. Queremos saber por qué alguien cambiaría a su sistema.',
+  'Laravel es el framework (la base del sistema) en PHP y Filament es una herramienta que genera casi solas las pantallas de administración. La "lógica de negocio" son las reglas del dominio, por ejemplo cómo se calcula un pago o un reajuste. La pregunta busca saber qué programaron ellos y qué hizo la herramienta, y si las reglas están ordenadas en un lugar o regadas por el código.',
+  'Los patrones GoF son 23 soluciones clásicas de diseño (del libro de cuatro autores, el "Gang of Four"), en tres grupos: creacionales (cómo se crean objetos), estructurales (cómo se combinan) y de comportamiento (cómo se reparten las tareas). "Propio" significa que lo programó el equipo, no que ya venía en Laravel.',
+  'El reajuste es el aumento anual del canon (el valor del arriendo); en vivienda urbana no puede superar el IPC del año anterior (Ley 820 de 2003). Strategy es un patrón que permite tener varias formas de calcular algo (por IPC, por un porcentaje pactado) y cambiar entre ellas sin llenar el código de "if".',
+  'Mide la mantenibilidad: si una regla está en un solo lugar, cambiarla es fácil y seguro. Si hay que tocar muchos archivos, el diseño está acoplado (todo depende de todo).',
+  'Gemini es la inteligencia artificial de Google, en la nube; un modelo local corre en su propio servidor y no envía datos afuera. Si existe una "interfaz" (un contrato común que cumplen todos los proveedores), cambiar de IA es reemplazar una pieza; si no, hay que reescribir. Mide extensibilidad.',
+  'Las pruebas automáticas son programas que verifican que el código funciona (por ejemplo, que un reajuste dé el valor correcto). CI/CD (integración y entrega continuas) es el proceso que, cada vez que suben código, lo prueba y lo despliega solo. Queremos saber si las pruebas existen y si corren en ese proceso.',
+  'Terraform es una herramienta para crear la infraestructura en la nube (servidores, bases de datos) escribiendo código en lugar de hacerlo a mano. Reutilizable significa que esa pieza serviría en otro proyecto cambiando solo algunos parámetros.',
+  'La Ley 1581 de 2012 es la ley colombiana de protección de datos personales: exige autorización para usar los datos de las personas. Si envían nombres, cédulas o pagos de los inquilinos a Gemini, esos datos salen a un tercero.'],
+ P2: [
+  'Busca evidencia de que la plataforma sirve: que personas reales la usaron y que se midió algo, por ejemplo mejores resultados en entrevistas.',
+  'LeetCode es una página de ejercicios de programación para entrevistas; Pramp ofrece entrevistas simuladas entre personas; ChatGPT también puede hacer de entrevistador. Queremos saber qué los diferencia.',
+  'Next.js es el frontend (lo que ve el usuario), Express es el backend (el servidor) y LiveKit es el servicio que transmite la voz en tiempo real. Monolito = todo en una sola aplicación; servicios separados = varias aplicaciones que se comunican entre sí. Es la pregunta de arquitectura.',
+  'Groq y Gemini son dos proveedores de inteligencia artificial. Tener dos es un "punto de variación" real: el sistema debería poder usar uno u otro sin cambiar el resto del código, idealmente con una interfaz común (patrón Strategy o Adapter).',
+  'Observer es un patrón de comportamiento: un objeto avisa automáticamente a los que están "suscritos" cuando algo cambia, como las notificaciones de una app. Es el patrón natural para notificaciones en tiempo real.',
+  'Mide la extensibilidad (principio abierto/cerrado: abierto para agregar, cerrado para modificar). Lo ideal es agregar una clase nueva sin tocar las que ya funcionan.',
+  'Ojo con la confusión: los retos de código tienen pruebas para el candidato, pero aquí preguntamos por las pruebas del software de ellos mismos. Integración continua = las pruebas corren solas cada vez que suben cambios.',
+  'La plataforma ejecuta código que escribe un usuario desconocido; ese código podría ser malicioso o un bucle infinito. Un "sandbox" (contenedor aislado) con límite de tiempo y memoria evita que tumbe o ataque el servidor.',
+  'Reusabilidad: si el motor que ejecuta código o el cliente que habla con la IA están bien separados, podrían usarse en otro sistema sin cambios.',
+  'LiveKit y las IA cobran por minuto o por uso. Si cada entrevista cuesta mucho, el proyecto no es sostenible. Mide la viabilidad (Ficha A.1).'],
+ P3: [
+  'Busca el problema real que motivó la refactorización (reescribir el código sin cambiar lo que hace). Lo típico: bloques enormes de "match" o "if" que preguntan "¿qué arma es?" para decidir qué hacer.',
+  'Godot programa con GDScript, un lenguaje sencillo pero lento para miles de enemigos. GDExtension permite escribir partes en C++, mucho más rápido. Queremos saber si midieron que hacía falta y cómo se conectan ambas partes.',
+  'Singleton es un patrón creacional que garantiza que exista un solo objeto de una clase, por ejemplo un único gestor del juego. En Godot, los "Autoload" ya hacen eso; si solo usaron Autoload, el patrón lo puso el motor, no el equipo.',
+  'Iterator es un patrón de comportamiento para recorrer una colección elemento por elemento sin saber cómo está guardada. GDScript ya lo trae (el "for"). Solo tiene sentido si el recorrido es especial, por ejemplo oleadas de enemigos.',
+  'PlayerCombatController es el script que controla el combate del jugador. Bajó de tamaño porque la lógica se repartió en clases (una por arma). La pregunta es el costo: si ahora hay 20 clases nuevas que suman 1.500 líneas, el código no se redujo, se reorganizó.',
+  'Principio abierto/cerrado: un buen diseño permite agregar un arma nueva creando una clase, sin modificar las que ya funcionan. Si hay que tocar varias, el patrón no está cumpliendo su función.',
+  '"Headless" significa que las pruebas corren sin abrir la ventana del juego (en consola), lo que permite automatizarlas. Regresión = algo que funcionaba y se dañó con un cambio.',
+  'Reusabilidad: si el sistema de armas o de controles no depende de escenas concretas del juego, podría llevarse a otro proyecto.',
+  'Claude Code es un asistente de IA que escribe código. Usarlo no es malo, pero el equipo debe entender y haber revisado lo que generó. Mide la evidencia (C8).',
+  'FPS (cuadros por segundo) mide qué tan fluido corre el juego. Flyweight es un patrón estructural que ahorra memoria compartiendo los datos comunes de miles de objetos parecidos: todos los enemigos de un tipo comparten modelo y estadísticas. Si lo usaron, deberían tener números de antes y después.'],
+ P4: [
+  'Busca saber si un taller de reparación real participó y si el problema existe de verdad.',
+  'AWS es la nube de Amazon; Supabase es un servicio que trae listos la base de datos, el inicio de sesión y el almacenamiento de archivos. Usar dos nubes ("multinube") tiene ventajas (rapidez) y costos (más complejidad). Todo diseño gana algo y sacrifica algo: queremos que lo sepan explicar.',
+  'State es un patrón de comportamiento: un objeto cambia su comportamiento según su estado. Una orden de reparación pasa por estados (recibida, en diagnóstico, en reparación, lista, entregada); con State cada estado es una clase y se evitan los "switch" gigantes.',
+  'Abstract Factory es un patrón creacional que crea "familias" de objetos que deben ir juntos (por ejemplo, todos los componentes de un mismo tema visual). Si no hay familias reales, es demasiado para el problema; un Factory Method (crear un solo tipo de objeto según el caso) bastaría.',
+  'Command es un patrón de comportamiento que convierte una acción (crear una orden, cambiar su estado) en un objeto. Eso permite guardar un historial, deshacer o encolar acciones.',
+  'Si State está bien hecho, un estado nuevo (por ejemplo "esperando repuesto") es una clase nueva y casi nada más. Mide la mantenibilidad.',
+  'Adapter es un patrón estructural que "traduce" una interfaz externa a la que espera el sistema, como un adaptador de enchufe. Es la forma natural de conectar pasarelas de pago (Wompi, PayU) sin amarrarse a una sola.',
+  'Cobertura = porcentaje del código que las pruebas ejecutan. GitHub Actions es el servicio de GitHub que corre las pruebas automáticamente cada vez que suben cambios.',
+  'React arma la interfaz con "componentes" (botones, tablas, formularios) y Shadcn UI es una librería de componentes. Reutilizar = el mismo componente, con parámetros, en varias pantallas; no copiar y pegar.',
+  'Si el número de guía es consecutivo (0001, 0002…), cualquiera puede probar números y ver las órdenes y los datos de otros clientes. Es una falla de seguridad común.'],
+ P5: [
+  'Busca saber si el problema es real: si trabajaron con una óptica de Valledupar, si tienen historias de usuario (requisitos escritos desde el punto de vista del usuario, por ejemplo "como asesor quiero…") y si alguien la usó con clientes.',
+  'Un "modelo entrenado" aprende con muchos ejemplos reales (fotos de clientes y la montura que les quedó bien). "Reglas" son condiciones fijas escritas por ellos (si la cara es redonda, montura cuadrada). Gemini es la IA de Google, en la nube, a la que se le pregunta con texto. El título dice "modelos de IA", pero ellos mismos reconocen que falta entrenarla con datos reales: queremos saber qué es hoy.',
+  'La DNP (distancia naso-pupilar) es la distancia entre el centro de la nariz y cada pupila; con ella el laboratorio centra los lentes frente al ojo. La cámara mide en píxeles; para pasar a milímetros necesitan una referencia de tamaño conocido (el iris mide unos 11,7 mm, o una tarjeta del tamaño de una cédula). Un error de 2 o 3 mm deja los lentes mal centrados.',
+  'Interpreter es un patrón de comportamiento para leer y evaluar un "mini lenguaje"; aquí, la fórmula óptica (esfera, cilindro y eje, por ejemplo "-1.25 -0.50 x 180"). Flyweight es un patrón estructural que ahorra memoria compartiendo los datos repetidos entre muchos objetos parecidos. Pídanles abrir el código y explicar qué problema tenían antes de usarlos.',
+  'parse_formula es la función que lee la fórmula óptica. Pasó de 87 a 4 líneas porque la lógica se movió a las clases del patrón Interpreter (una por cada parte de la fórmula). La lógica no desaparece: queremos saber dónde quedó y si tenían pruebas que demostraran que la función da los mismos resultados que antes.',
+  'Tienen 14 patrones; es fácil que alguno esté forzado, es decir, puesto para cumplir con la materia y no porque hiciera falta. Esta pregunta invita a la autocrítica: un equipo maduro lo reconoce.',
+  'Multi-AZ = el sistema corre en dos centros de datos (zonas de disponibilidad) de AWS: si uno falla, sigue el otro. Un NAT Gateway es el servicio que deja salir a internet a los servidores privados y se cobra por hora (por eso es el 23 % del costo). Para un piloto, esta alta disponibilidad puede ser más de lo necesario.',
+  'Pruebas unitarias = prueban una función aislada; de integración = prueban varias partes juntas (la API con la base de datos); de extremo a extremo = simulan a un usuario usando la app completa. Cobertura = porcentaje del código que las pruebas recorren. "Corren solas" = integración continua.',
+  'Mide la extensibilidad: si existe una interfaz común, agregar otra óptica, otro proveedor de IA u otro canal de mensajería es crear una pieza nueva sin tocar las existentes.',
+  'Es un sistema "multi-óptica" (multi-tenant): varias ópticas comparten la misma app y la misma base de datos. Cada consulta debe filtrar por la óptica (Cuenta) del usuario; si una sola consulta lo olvida, una óptica podría ver los clientes de otra.',
+  'Los datos biométricos son medidas del cuerpo que identifican a una persona (rostro, huella). La Ley 1581 de 2012 los considera datos sensibles y exige autorización expresa. Dicen que la imagen no sale del equipo, pero usan Gemini, que está en la nube: ¿qué le envían?',
+  'Reusabilidad: el módulo Vision (detectar el rostro y medir) podría servir en otra app si está separado del resto con una interfaz clara.'],
+ P6: [
+  'Jornada extramural = vacunación fuera del centro de salud (veredas, colegios), donde muchas veces no hay internet. Busca saber si probaron con usuarios reales del PAI (Programa Ampliado de Inmunizaciones).',
+  'PAIWEB es el sistema oficial del Ministerio de Salud donde se registra cada vacuna aplicada en Colombia. Si su app no se conecta con él, el vacunador tendría que digitar todo dos veces.',
+  'Outbox ("bandeja de salida") es un patrón de arquitectura, no GoF: cada registro hecho sin internet se guarda en una cola local y se envía al servidor cuando vuelve la conexión, como los mensajes pendientes de WhatsApp. Idempotencia = si un envío se repite, el dato no se duplica.',
+  'Conflicto = dos dispositivos modifican el mismo dato sin conexión y luego ambos sincronizan. Hace falta una regla (gana el último, se fusionan, o se identifica al paciente por su documento) para no duplicar pacientes ni dosis.',
+  'La guía exige al menos un patrón de cada categoría: creacional (cómo se crean objetos), estructural (cómo se combinan) y de comportamiento (cómo se reparten las tareas). En el póster solo nombran Outbox, que no es GoF.',
+  'Repository es un patrón que oculta de dónde vienen los datos (la base local SQLite o el servidor). Strategy permite cambiar la forma de hacer algo mientras la app corre. Con ellos, el resto de la app no necesita saber si hay internet o no.',
+  'Esquema = el calendario de dosis de cada vacuna según la edad. El Ministerio lo cambia a veces; si está escrito "a mano" en el código, cada cambio exige publicar una nueva versión de la app. Lo ideal es que sea configuración o datos.',
+  'Flutter es el framework de la app móvil y Spring Boot el del servidor en Java. La sincronización es lo más delicado del sistema: queremos saber si tiene pruebas automáticas.',
+  'Los datos de salud son sensibles (Ley 1581). Si roban o pierden el celular, una base SQLite sin cifrar se puede leer. SQLCipher es una versión cifrada de SQLite.',
+  'Reusabilidad: si el mecanismo de sincronización no depende de "vacunas", podría usarse en cualquier otra app que trabaje sin conexión.'],
+ COMUNES: [
+  'Muchos frameworks ya traen patrones incorporados (por ejemplo, la inyección de dependencias o los eventos). La rúbrica pide distinguir lo que programó el equipo de lo que ya venía, y juzgar si una solución más simple habría bastado, para evitar la sobreingeniería (complicar sin necesidad).',
+  'El repositorio es donde está guardado el código (por ejemplo en GitHub). README = documento de instrucciones; UML = diagramas del diseño. Ver el código en vivo convierte una afirmación declarada (D) en verificada (V).'],
+};
 </script>
 <script>
 {
@@ -1246,12 +1323,18 @@ CREATE TABLE IF NOT EXISTS criterio(id INTEGER PRIMARY KEY, proyecto_id TEXT REF
 CREATE TABLE IF NOT EXISTS atributo(id INTEGER PRIMARY KEY, proyecto_id TEXT REFERENCES proyecto(id), atributo TEXT, sub TEXT, criterio TEXT, guia TEXT, evidencia TEXT DEFAULT '', dv TEXT DEFAULT '', nivel INTEGER, orden INTEGER);
 CREATE TABLE IF NOT EXISTS patron(id INTEGER PRIMARY KEY, proyecto_id TEXT REFERENCES proyecto(id), nombre TEXT, tipo TEXT, origen TEXT DEFAULT '', donde TEXT DEFAULT '', para_que TEXT DEFAULT '', costo TEXT DEFAULT '', justifica TEXT DEFAULT '', porque TEXT DEFAULT '', dv TEXT DEFAULT '', orden INTEGER);
 CREATE TABLE IF NOT EXISTS verificacion(id INTEGER PRIMARY KEY, proyecto_id TEXT REFERENCES proyecto(id), criterio TEXT, texto TEXT, orden INTEGER, estado TEXT DEFAULT '', nota TEXT DEFAULT '', hora TEXT);
-CREATE TABLE IF NOT EXISTS pregunta(id INTEGER PRIMARY KEY, proyecto_id TEXT REFERENCES proyecto(id), criterio TEXT, texto TEXT, buena TEXT, orden INTEGER, estado TEXT DEFAULT '', integrante TEXT DEFAULT '', nota TEXT DEFAULT '', hora TEXT);
+CREATE TABLE IF NOT EXISTS pregunta(id INTEGER PRIMARY KEY, proyecto_id TEXT REFERENCES proyecto(id), criterio TEXT, texto TEXT, buena TEXT, orden INTEGER, estado TEXT DEFAULT '', integrante TEXT DEFAULT '', explica TEXT DEFAULT '', nota TEXT DEFAULT '', hora TEXT);
 CREATE TABLE IF NOT EXISTS contacto(id INTEGER PRIMARY KEY, nombre TEXT, correo TEXT, elegido INTEGER DEFAULT 0);`;
 const q = (sql, p = []) => { const st = db.prepare(sql); st.bind(p); const out = []; while (st.step()) out.push(st.getAsObject()); st.free(); return out; };
 const run = (sql, p = []) => { db.run(sql, p); dirty(); };
 const meta = (k, v) => v === undefined ? (q('SELECT v FROM meta WHERE k=?', [k])[0] || {}).v : db.run('INSERT OR REPLACE INTO meta VALUES(?,?)', [k, String(v)]);
 
+const explicaDe = (id, i) => { const p = PROYECTOS.find(x => x.id === id); return i < p.preguntas.length ? (EXPLICA[id] || [])[i] || '' : (EXPLICA.COMUNES || [])[i - p.preguntas.length] || ''; };
+function migrar() {
+  try { db.run("ALTER TABLE pregunta ADD COLUMN explica TEXT DEFAULT ''"); } catch (e) {}
+  PROYECTOS.forEach(p => [...p.preguntas, ...COMUNES].forEach((x, i) =>
+    db.run("UPDATE pregunta SET explica=? WHERE proyecto_id=? AND texto=? AND (explica IS NULL OR explica='')", [explicaDe(p.id, i), p.id, x[1]])));
+}
 function sembrar() {
   PROYECTOS.forEach(p => {
     db.run(`INSERT INTO proyecto(id,corto,titulo,equipo,asignaturas,herramientas,vigilar,evaluadores,fecha,actualizado,${A2.map(a => a[0]).join(',')}) VALUES(?,?,?,?,?,?,?,?,?,?,${A2.map(() => '?').join(',')})`,
@@ -1260,7 +1343,7 @@ function sembrar() {
     A3.forEach((a, i) => db.run('INSERT INTO atributo(proyecto_id,atributo,sub,criterio,guia,orden) VALUES(?,?,?,?,?,?)', [p.id, a[0], a[1], a[2], a[3], i]));
     p.patrones.forEach((t, i) => db.run('INSERT INTO patron(proyecto_id,nombre,tipo,donde,para_que,costo,porque,dv,origen,orden) VALUES(?,?,?,?,?,?,?,?,?,?)', [p.id, t[0], t[1], t[2], t[3], t[4], t[5], 'D', '', i]));
     p.checks.forEach((c, i) => db.run('INSERT INTO verificacion(proyecto_id,criterio,texto,orden) VALUES(?,?,?,?)', [p.id, c[0], c[1], i]));
-    [...p.preguntas, ...COMUNES].forEach((x, i) => db.run('INSERT INTO pregunta(proyecto_id,criterio,texto,buena,orden) VALUES(?,?,?,?,?)', [p.id, x[0], x[1], x[2], i]));
+    [...p.preguntas, ...COMUNES].forEach((x, i) => db.run('INSERT INTO pregunta(proyecto_id,criterio,texto,buena,orden,explica) VALUES(?,?,?,?,?,?)', [p.id, x[0], x[1], x[2], i, explicaDe(p.id, i)]));
   });
   db.run('INSERT INTO contacto(nombre,correo,elegido) VALUES(?,?,1)', [DOCENTE.nombre, DOCENTE.correo]);
 }
@@ -1374,6 +1457,7 @@ function renderEntrevista() {
     const st = ST_Q.find(s => s[0] === r.estado);
     html += `<div class="card q ${st ? 'done' : ''}" style="--st:${st ? st[2] : 'transparent'}">
       <div class="txt">${esc(r.texto)}</div>
+      ${r.explica ? `<p class="exp"><b>Qué significa y por qué se pregunta:</b> ${esc(r.explica)}</p>` : ''}
       ${r.buena ? `<details class="hint"><summary>Qué indica una buena respuesta</summary>${esc(r.buena)}</details>` : ''}
       ${segBtns(ST_Q, r.estado, 'qst', r.id)}
       <div class="who"><span>Respondió:</span>${eq.map(n => `<button data-a="qwho" data-id="${r.id}" data-v="${esc(n)}" class="${r.integrante === n ? 'on' : ''}">${esc(corto(n))}</button>`).join('')}</div>
@@ -1753,6 +1837,7 @@ pintaReloj();
     db = bytes ? new SQL.Database(bytes) : new SQL.Database();
     db.run(SCHEMA);
     if (!q('SELECT id FROM proyecto LIMIT 1').length) { sembrar(); meta('creada', now()); }
+    migrar();
     pid = meta('proyecto_actual') || 'P5';
     if (!q('SELECT id FROM proyecto WHERE id=?', [pid]).length) pid = 'P1';
     $('#loading').remove(); $('#s-inicio').classList.add('on');
