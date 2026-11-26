@@ -15,7 +15,7 @@
 :root{color-scheme:light dark;
 --bg:light-dark(#f4f6f7,#121518);--panel:light-dark(#ffffff,#1c2024);--steel:light-dark(#d5dbe0,#2b3137);
 --ink:light-dark(#121212,#eef1f3);--mute:light-dark(#5b6670,#9aa5ae);--line:light-dark(#d5dbe0,#333a41);
---red:light-dark(#d81f13,#ff5a4e);--ok:light-dark(#1d7f46,#4cc98a);--mid:light-dark(#a8670c,#f0b24a);--bar:light-dark(#121212,#0b0d0f)}
+--red:light-dark(#c81b10,#ff6a5f);--ok:light-dark(#1a7340,#5fd69a);--mid:light-dark(#8f5508,#f2bb5c);--bar:light-dark(#121212,#0b0d0f)}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,system-ui,sans-serif;overflow-x:clip}
@@ -58,7 +58,8 @@ textarea{min-height:64px;resize:vertical}
 details.hint summary{cursor:pointer;min-height:32px;display:flex;align-items:center;font-weight:600}
 .seg{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
 .seg button{border:1.5px solid var(--line);background:var(--bg);border-radius:10px;min-height:46px;padding:0 14px;font-weight:600}
-.seg button.on{background:var(--c,var(--ink));border-color:var(--c,var(--ink));color:#fff}
+.seg button.on{background:var(--ink);border-color:var(--ink);color:var(--panel)}
+.seg button.on[style*="--c"]{background:var(--c);border-color:var(--c);color:light-dark(#fff,#0b0d0f)}
 .seg.sm button{min-height:40px;padding:0 12px;font-size:14px}
 .who{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;align-items:center}
 .who span{font-size:13px;color:var(--mute);margin-right:4px}
@@ -80,7 +81,9 @@ details.hint summary{cursor:pointer;min-height:32px;display:flex;align-items:cen
 .score{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px;align-items:center}
 .big{font:700 clamp(44px,9vw,80px)/1 "Inter Tight";font-variant-numeric:tabular-nums;text-align:right}
 .big small{font-size:.32em;color:var(--mute);font-weight:600;display:block}
-.lvl{display:inline-block;font-weight:700;padding:4px 12px;border-radius:999px;color:#fff;background:var(--mute)}
+.lvl{display:inline-block;font-weight:700;padding:4px 12px;border-radius:999px;color:light-dark(#fff,#0b0d0f);background:var(--mute)}
+.cal{margin:8px 0 0;padding:8px 12px;border-left:4px solid var(--ink);background:var(--bg);border-radius:0 8px 8px 0;font-size:14px}
+.cal b{font-weight:700}
 .crit .head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
 .crit .head b{font-size:17px}.crit .head span{color:var(--mute);font-size:14px;font-variant-numeric:tabular-nums}
 .levels{display:grid;gap:6px;margin-top:10px}
@@ -171,6 +174,7 @@ pre.rep{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);b
         <li><b>Preguntas (5 min):</b> al menos una a cada integrante; marquen quién responde.</li>
         <li><b>Cierre (1 min):</b> una fortaleza y una mejora concreta.</li>
       </ol>
+      <p class="cal"><b>Recuerden:</b> son proyectos de aula de estudiantes de pregrado. Evalúen lo que aprendieron y saben explicar (sobre todo los patrones de diseño), no si el producto está listo para venderse. En Ficha C cada criterio trae una guía de qué esperar a este nivel.</p>
       <p class="hint">Después del stand llenen las fichas A, B y C con lo anotado, y envíen el PDF desde la pestaña Enviar. Anoten evidencias, no impresiones: "mostró cobertura del 78 %", no "parecen saber".</p>
     </div>
     <div class="card" id="watchCard">
@@ -1301,6 +1305,37 @@ const EXPLICA = {
   'Muchos frameworks ya traen patrones incorporados (por ejemplo, la inyección de dependencias o los eventos). La rúbrica pide distinguir lo que programó el equipo de lo que ya venía, y juzgar si una solución más simple habría bastado, para evitar la sobreingeniería (complicar sin necesidad).',
   'El repositorio es donde está guardado el código (por ejemplo en GitHub). README = documento de instrucciones; UML = diagramas del diseño. Ver el código en vivo convierte una afirmación declarada (D) en verificada (V).'],
 };
+
+/* Calibración para proyectos de aula de pregrado */
+const CALIBRA = {
+  C1: 'Para un proyecto de aula basta con un problema real del entorno y al menos un usuario o negocio consultado. No exijan estudios de mercado ni usuarios en producción.',
+  C2: 'Esperen que sepan nombrar su estilo (capas, MVC, cliente-servidor, offline-first) y mostrar al menos un diagrama. En pregrado, un 4 es explicar por qué eligieron ese estilo, no tener la documentación de una empresa.',
+  C3: 'Es el criterio central de la materia (20 %). Lo importante es que ubiquen el patrón en el código y expliquen qué problema resolvía. Que alguno quede forzado es normal en un proyecto de aprendizaje: resten si no saben explicarlo, no por usar muchos.',
+  C4: 'Valoren que el código esté organizado por módulos y que un cambio típico sea fácil de ubicar. Las métricas de antes y después son un plus, no un requisito.',
+  C5: 'Basta con que muestren un caso concreto de cómo agregarían algo nuevo (un arma, un proveedor, un estado) sin reescribir. La escalabilidad de la infraestructura solo aplica a quienes desplegaron en la nube.',
+  C6: 'En pregrado, pruebas unitarias automatizadas en los módulos principales ya son un 3. Integración continua con cobertura reportada es un 4. Pruebas solo manuales, un 2.',
+  C7: 'Busquen componentes, servicios o widgets usados en más de una parte del proyecto. No se espera una librería publicada.',
+  C8: 'Valoren que muestren el repositorio, los diagramas o la demo en vivo. Lo que solo está en el póster cuenta como declarado (D), no verificado (V).',
+};
+/* Ajustes de las preguntas al nivel de un proyecto de aula: [proyecto, índice, texto nuevo o null, buena respuesta nueva o null] */
+[
+  ['P1', 0, null, 'Al menos un arrendador real consultado; para un proyecto de aula no se exige más.'],
+  ['P1', 7, null, 'Pruebas automatizadas del cálculo de reajustes (nivel 3); si además corren en el pipeline, nivel 4.'],
+  ['P1', 9, '¿Qué datos del arrendatario se envían a Gemini? ¿Pensaron en la autorización que pide la Ley 1581?', 'Saben qué datos salen y reconocen el tema legal (ellos mismos recomiendan IA local). No se espera que ya esté resuelto.'],
+  ['P2', 0, '¿Lo probaron con compañeros u otros candidatos? ¿Qué les dijeron?', 'Algunos usuarios de prueba y su retroalimentación; no se exigen estudios formales.'],
+  ['P2', 7, null, 'Que conozcan el riesgo y tengan al menos un límite de tiempo; un sandbox completo sería sobresaliente.'],
+  ['P2', 9, '¿Tienen una idea de cuánto cuesta cada entrevista por voz (LiveKit + IA)?', 'Una estimación aproximada, o reconocer que es un costo que hay que revisar.'],
+  ['P3', 6, null, 'Saben cuántos tests tienen y qué cubren; ejecutarlos frente al jurado es un plus.'],
+  ['P3', 9, null, 'Alguna medición (aunque sea el contador de FPS de Godot); si no midieron, que lo reconozcan.'],
+  ['P4', 9, null, 'Reconocen el riesgo y proponen una solución (número no consecutivo o una verificación adicional).'],
+  ['P5', 1, null, 'Reconocen con honestidad qué es hoy (reglas, Gemini o un modelo). En un proyecto de aula no se exige un modelo entrenado.'],
+  ['P5', 2, null, 'Saben cómo calibran la escala y reconocen que falta validarla con un pupilómetro (ellos lo recomiendan). No se espera precisión clínica en un proyecto de aula.'],
+  ['P5', 6, '¿Por qué eligieron Multi-AZ y dos NAT Gateway? ¿Cómo sería una versión más económica para un piloto?', 'Explican la decisión de alta disponibilidad (es de Cloud Computing) y saben qué recortarían.'],
+  ['P5', 10, null, 'Conocen la ley y saben qué datos salen del equipo; no se espera un proceso legal completo.'],
+  ['P6', 0, null, 'Algún contacto con personal de salud; probarlo en una jornada real sería un plus.'],
+  ['P6', 1, '¿Conocen PAIWEB, el sistema oficial del Ministerio? ¿Cómo se conectaría su app en el futuro?', 'Lo conocen y tienen una idea de integración; no se espera que ya esté integrado.'],
+  ['P6', 8, '¿Cómo protegen los datos de salud guardados en el celular? ¿Cómo se autentican los vacunadores?', 'Al menos autenticación y conciencia del riesgo; cifrar la base local sería sobresaliente.'],
+].forEach(([id, i, t, b]) => { const x = PROYECTOS.find(p => p.id === id).preguntas[i]; if (t) x[1] = t; if (b) x[2] = b; });
 </script>
 <script>
 {
@@ -1330,10 +1365,13 @@ const run = (sql, p = []) => { db.run(sql, p); dirty(); };
 const meta = (k, v) => v === undefined ? (q('SELECT v FROM meta WHERE k=?', [k])[0] || {}).v : db.run('INSERT OR REPLACE INTO meta VALUES(?,?)', [k, String(v)]);
 
 const explicaDe = (id, i) => { const p = PROYECTOS.find(x => x.id === id); return i < p.preguntas.length ? (EXPLICA[id] || [])[i] || '' : (EXPLICA.COMUNES || [])[i - p.preguntas.length] || ''; };
+const CONTENIDO_V = 3;
 function migrar() {
   try { db.run("ALTER TABLE pregunta ADD COLUMN explica TEXT DEFAULT ''"); } catch (e) {}
+  if (+(meta('contenido_v') || 0) >= CONTENIDO_V) return;
   PROYECTOS.forEach(p => [...p.preguntas, ...COMUNES].forEach((x, i) =>
-    db.run("UPDATE pregunta SET explica=? WHERE proyecto_id=? AND texto=? AND (explica IS NULL OR explica='')", [explicaDe(p.id, i), p.id, x[1]])));
+    db.run('UPDATE pregunta SET criterio=?, texto=?, buena=?, explica=? WHERE proyecto_id=? AND orden=?', [x[0], x[1], x[2], explicaDe(p.id, i), p.id, i])));
+  meta('contenido_v', CONTENIDO_V); dirty();
 }
 function sembrar() {
   PROYECTOS.forEach(p => {
@@ -1388,7 +1426,7 @@ const evaluadores = () => (PR().evaluadores || '').split(/,| y /).map(s => s.tri
 const equipo = () => (PR().equipo || '').split(',').map(s => s.trim()).filter(Boolean);
 const corto = n => n.split(' ')[0];
 const ST_Q = [['solida','Sólida','var(--ok)',4],['parcial','Parcial','var(--mid)',3],['debil','Débil','var(--red)',2],['nr','No respondió','#6b7680',1]];
-const ST_C = [['ok','Funciona','var(--ok)',4],['parcial','A medias','var(--mid)',3],['falla','Falla','var(--red)',1],['nm','No lo mostraron','#6b7680',1]];
+const ST_C = [['ok','Funciona','var(--ok)',4],['parcial','A medias','var(--mid)',3],['falla','Falla','var(--red)',1],['nm','No lo mostraron','#6b7680',2]];
 const VAL_B = ['Pertinente y justificado', 'Mayormente pertinente', 'Forzado o insuficiente', 'Sobreingeniería'];
 const nivelGlobal = p => p >= 85 ? ['Alto', 'var(--ok)'] : p >= 70 ? ['Satisfactorio', '#2f6f9a'] : p >= 55 ? ['Básico', 'var(--mid)'] : ['Bajo', 'var(--red)'];
 function puntaje() {
@@ -1510,6 +1548,7 @@ function renderC() {
   $('#critList').innerHTML = s.cs.map(c => {
     const sg = sugerida(c.clave), desc = CRITERIOS.find(x => x[0] === c.clave)[3];
     return `<div class="card crit"><div class="head"><b>${esc(c.clave)}. ${esc(c.nombre)}</b><span>Peso ${c.peso} % · aporta ${c.nivel ? (c.nivel / 4 * c.peso).toFixed(1) : '–'}</span></div>
+      <p class="cal"><b>Para un proyecto de aula:</b> ${esc(CALIBRA[c.clave] || '')}</p>
       <div class="levels">${[4, 3, 2, 1].map(n => `<button data-a="crit" data-id="${c.id}" data-v="${n}" class="${c.nivel === n ? 'on' : ''}"><i>${n}</i><span>${esc(desc[4 - n])}</span></button>`).join('')}</div>
       <div class="sug">${sg ? `Sugerido por sus registros (${sg.k}): <b>${sg.n}</b> <button data-a="crit" data-id="${c.id}" data-v="${sg.n}">usar ${sg.n}</button>` : 'Sin registros todavía para este criterio.'}</div>
       <textarea data-k="s:${c.id}" placeholder="Justificación con evidencia">${esc(c.nota)}</textarea></div>`;
