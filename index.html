@@ -53,6 +53,7 @@ textarea{min-height:64px;resize:vertical}
 .q .txt{font-size:17px;font-weight:600}
 .exp{margin:8px 0 0;padding:10px 12px;border-radius:10px;background:var(--steel);font-size:15px;line-height:1.5}
 .exp b{display:block;font-size:13px;color:var(--mute);margin-bottom:2px}
+.fh{margin:0 0 6px;font-size:13px;color:var(--mute);line-height:1.4}
 .q.done{border-left:6px solid var(--st)}
 .hint{margin:6px 0 0;font-size:14px;color:var(--mute)}
 details.hint summary{cursor:pointer;min-height:32px;display:flex;align-items:center;font-weight:600}
@@ -211,6 +212,7 @@ pre.rep{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);b
   <section class="sec" id="s-fichaB">
     <div class="card">
       <h2>Ficha B · Patrones de diseño</h2>
+      <p class="exp"><b>Qué es esta ficha</b><span id="bIntro"></span></p>
       <p class="hint">Precargados los que nombra el póster (D). Verifiquen cada uno en el código y documenten al menos uno de cada categoría.</p>
       <p id="bResumen" style="margin:10px 0 0"></p>
     </div>
@@ -219,6 +221,7 @@ pre.rep{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);b
     <div class="card" style="margin-top:12px">
       <h3>Valoración global del uso de patrones</h3>
       <div class="seg" id="bVal"></div>
+      <ul class="hint" id="bValExp" style="padding-left:20px"></ul>
       <label class="f" for="fBCom">Comentario</label>
       <textarea id="fBCom" data-k="p:b_comentario"></textarea>
     </div>
@@ -229,6 +232,7 @@ pre.rep{white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);b
       <div>
         <h2>C.1 Calificación con la rúbrica</h2>
         <p class="hint" id="scoreHint"></p>
+        <details class="hint"><summary>¿Cómo se calcula?</summary><span id="calcExp"></span></details>
         <div class="meter"><i id="scoreBar" style="width:0"></i></div>
         <p style="margin:10px 0 0">Nivel global: <span class="lvl" id="lvl">—</span></p>
       </div>
@@ -1308,7 +1312,7 @@ const EXPLICA = {
 
 /* Calibración para proyectos de aula de pregrado */
 const CALIBRA = {
-  C1: 'Para un proyecto de aula basta con un problema real del entorno y al menos un usuario o negocio consultado. No exijan estudios de mercado ni usuarios en producción.',
+  C1: 'Basta con un problema real del entorno y al menos un usuario o negocio consultado. No exijan estudios de mercado ni usuarios en producción.',
   C2: 'Esperen que sepan nombrar su estilo (capas, MVC, cliente-servidor, offline-first) y mostrar al menos un diagrama. En pregrado, un 4 es explicar por qué eligieron ese estilo, no tener la documentación de una empresa.',
   C3: 'Es el criterio central de la materia (20 %). Lo importante es que ubiquen el patrón en el código y expliquen qué problema resolvía. Que alguno quede forzado es normal en un proyecto de aprendizaje: resten si no saben explicarlo, no por usar muchos.',
   C4: 'Valoren que el código esté organizado por módulos y que un cambio típico sea fácil de ubicar. Las métricas de antes y después son un plus, no un requisito.',
@@ -1336,6 +1340,74 @@ const CALIBRA = {
   ['P6', 1, '¿Conocen PAIWEB, el sistema oficial del Ministerio? ¿Cómo se conectaría su app en el futuro?', 'Lo conocen y tienen una idea de integración; no se espera que ya esté integrado.'],
   ['P6', 8, '¿Cómo protegen los datos de salud guardados en el celular? ¿Cómo se autentican los vacunadores?', 'Al menos autenticación y conciencia del riesgo; cifrar la base local sería sobresaliente.'],
 ].forEach(([id, i, t, b]) => { const x = PROYECTOS.find(p => p.id === id).preguntas[i]; if (t) x[1] = t; if (b) x[2] = b; });
+
+/* ---------- Explicaciones de la Ficha B ---------- */
+const PATRON_INFO = {
+  'factory method': 'Patrón creacional. Un método decide qué objeto crear según el caso, para que el resto del código no dependa de clases concretas. Ejemplo: crear un enemigo distinto según el nivel del juego.',
+  'abstract factory': 'Patrón creacional. Una "fábrica de familias": crea grupos de objetos que deben ir juntos y combinar entre sí. Ejemplo: todos los botones y menús de un tema claro o de un tema oscuro.',
+  'builder': 'Patrón creacional. Arma un objeto complejo paso a paso, en vez de usar un constructor con muchísimos parámetros. Ejemplo: armar una orden con cliente, equipo, diagnóstico y repuestos.',
+  'prototype': 'Patrón creacional. Crea objetos nuevos copiando (clonando) uno existente que sirve de modelo. Ejemplo: clonar un enemigo base y cambiarle solo la vida.',
+  'singleton': 'Patrón creacional. Garantiza que de una clase exista un único objeto en todo el programa. Ejemplo: la configuración o la conexión a la base de datos. Muchos frameworks ya lo hacen solos (en Godot, los Autoload).',
+  'adapter': 'Patrón estructural. "Traduce" la interfaz de algo externo a la que espera el sistema, como un adaptador de enchufe. Ejemplo: unir teclado, táctil y mando bajo un mismo control, o conectar una pasarela de pago.',
+  'bridge': 'Patrón estructural. Separa "qué se hace" de "cómo se hace" para que ambos cambien por separado. Ejemplo: tipos de notificación (alerta, recordatorio) por canales (WhatsApp, correo) sin crear una clase por cada combinación.',
+  'composite': 'Patrón estructural. Trata igual a un elemento suelto y a un grupo de elementos, formando un árbol. Ejemplo: un menú que contiene opciones y submenús.',
+  'decorator': 'Patrón estructural. Agrega funciones a un objeto "envolviéndolo", sin modificar su clase, y se pueden apilar. Ejemplo: daño base + runa de fuego + carta de golpe crítico.',
+  'facade': 'Patrón estructural. Una "fachada": un punto de entrada simple que oculta varios pasos o subsistemas. Ejemplo: entregar() que por dentro factura, actualiza el inventario y notifica al cliente.',
+  'flyweight': 'Patrón estructural. Ahorra memoria compartiendo los datos repetidos entre muchos objetos parecidos. Ejemplo: mil enemigos que comparten el mismo modelo 3D y las mismas estadísticas.',
+  'proxy': 'Patrón estructural. Un intermediario que controla el acceso a otro objeto (permisos, caché, carga diferida). Ejemplo: verificar que el usuario pertenece a la óptica antes de consultar sus datos.',
+  'chain of responsibility': 'Patrón de comportamiento. Pasa una solicitud por una cadena de manejadores hasta que uno la atiende. Ejemplo: validaciones en cadena o los middlewares de un servidor.',
+  'command': 'Patrón de comportamiento. Convierte una acción en un objeto para poder guardarla, deshacerla o ponerla en cola. Ejemplo: "cambiar el estado de la orden" con historial de cambios.',
+  'interpreter': 'Patrón de comportamiento. Define cómo leer y evaluar un mini lenguaje o una fórmula, con una clase por cada regla. Ejemplo: la fórmula óptica "-1.25 -0.50 x 180" (esfera, cilindro y eje).',
+  'iterator': 'Patrón de comportamiento. Recorre una colección elemento por elemento sin mostrar cómo está guardada. Casi todos los lenguajes ya lo traen (el "for"); solo aporta si el recorrido es especial.',
+  'mediator': 'Patrón de comportamiento. Un objeto central coordina a otros para que no se hablen directamente entre sí. Ejemplo: un controlador que coordina los campos de un formulario.',
+  'memento': 'Patrón de comportamiento. Guarda una "foto" del estado de un objeto para poder restaurarlo después (deshacer). Ejemplo: recuperar un borrador de cotización.',
+  'observer': 'Patrón de comportamiento. Un objeto avisa automáticamente a sus "suscriptores" cuando cambia. Ejemplo: notificaciones en tiempo real.',
+  'state': 'Patrón de comportamiento. El objeto cambia su comportamiento según su estado, y cada estado es una clase. Ejemplo: orden recibida → en reparación → entregada, sin un "switch" gigante.',
+  'strategy': 'Patrón de comportamiento. Varias formas intercambiables de hacer lo mismo, cada una en su clase. Ejemplo: el comportamiento de cada arma, o varios proveedores de IA.',
+  'template method': 'Patrón de comportamiento. Define los pasos fijos de un proceso y deja que las subclases cambien solo algunos pasos.',
+  'visitor': 'Patrón de comportamiento. Permite agregar operaciones nuevas a un grupo de objetos sin modificar sus clases.',
+  'outbox': 'No es GoF (es un patrón de arquitectura). Guarda en una cola local lo que se registra sin conexión y lo envía al servidor cuando vuelve internet, como los mensajes pendientes de WhatsApp.',
+  'repository': 'No es GoF. Oculta de dónde vienen los datos (base local, servidor, API) detrás de una interfaz, para que el resto del código no lo sepa.',
+  'mvc': 'No es GoF (es un estilo de arquitectura). Separa Modelo (los datos), Vista (las pantallas) y Controlador (lo que responde a las acciones del usuario).',
+  'inyeccion de dependencias': 'No es GoF. El framework le entrega a cada clase lo que necesita, en vez de que ella lo cree. Laravel, Spring y Angular lo hacen solos: normalmente es "Framework", no "Propio".',
+};
+const normPatron = n => String(n || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/\s+/g, ' ').trim();
+const FICHA_B_AYUDA = {
+  intro: 'Un patrón de diseño es una solución conocida a un problema que se repite al programar. Los 23 patrones GoF ("Gang of Four", el libro de cuatro autores) se agrupan en creacionales (cómo se crean los objetos), estructurales (cómo se combinan) y de comportamiento (cómo se reparten las tareas). Aquí registran cada patrón que el equipo dice usar y juzgan si valió la pena.',
+  origen: 'Propio = lo programó el equipo. Framework = ya venía en la herramienta (por ejemplo los Facade de Laravel, la inyección de dependencias de Spring o los Autoload de Godot). Solo lo propio cuenta como aporte del equipo.',
+  dv: 'D = declarado: solo lo dicen (en el póster o de palabra). V = verificado: lo vieron en el código o en la demo.',
+  donde: 'En qué parte del código está: módulo, clase o archivo (por ejemplo "PlayerCombatController").',
+  para_que: 'Qué problema tenían sin el patrón. Por ejemplo: "un if gigante por cada tipo de arma".',
+  costo: 'Lo que agrega: cuántas clases, interfaces o capas nuevas. Más piezas = más difícil seguir el código.',
+  justifica: 'Sí = hay una variación real (varios tipos, proveedores o estados) y evidencia del beneficio. Parcial = ayuda pero sin pruebas o con exceso. No = forzado, o una función o un "if" bastaban.',
+  valoracion: [
+    ['Pertinente y justificado', 'Casi todos los patrones resuelven un problema real y lo saben demostrar.'],
+    ['Mayormente pertinente', 'La mayoría están bien, con algunos forzados o sin evidencia.'],
+    ['Forzado o insuficiente', 'Se usaron para cumplir, no los saben ubicar o son muy pocos.'],
+    ['Sobreingeniería', 'Complicaron el código sin necesidad: muchos patrones para un problema simple.'],
+  ],
+};
+
+/* ---------- Explicaciones de la Ficha C ---------- */
+const CRIT_EXPLICA = {
+  C1: 'Si el problema es real, para quién es y si la solución tiene sentido frente a lo que ya existe.',
+  C2: 'Cómo está organizado el sistema por dentro: sus grandes partes (frontend, backend, base de datos, nube), cómo se comunican, si eso está dibujado en diagramas y si saben por qué lo eligieron así.',
+  C3: 'Si usaron patrones de diseño de verdad: que los muestren en el código, digan qué problema resolvía cada uno y si valió la pena la complejidad que agregan.',
+  C4: 'Qué tan fácil es entender y modificar el código. Cohesión alta = cada módulo hace una sola cosa. Acoplamiento bajo = los módulos dependen poco unos de otros, así un cambio no daña todo.',
+  C5: 'Qué tan fácil es agregar algo nuevo sin dañar lo que ya funciona (principio abierto/cerrado: abierto para agregar, cerrado para modificar), y si la infraestructura puede crecer.',
+  C6: 'Si tienen pruebas que revisan el código automáticamente, de qué tipo (unitarias, de integración, de extremo a extremo) y si corren solas cada vez que suben cambios (integración continua).',
+  C7: 'Si partes del sistema se pueden usar en otro lugar, dentro del mismo proyecto o en otro, sin copiar y pegar.',
+  C8: 'Si lo que afirman en el póster lo pueden demostrar: repositorio, diagramas, métricas o la demo funcionando.',
+};
+const FICHA_C_AYUDA = {
+  calculo: 'Cada nivel se convierte en puntos así: nivel ÷ 4 × peso. Ejemplo: C3 pesa 20; con nivel 3 aporta 3 ÷ 4 × 20 = 15 puntos. La suma de los ocho criterios da el puntaje sobre 100, y la nota sobre 5 es el puntaje ÷ 20. Nivel global: Alto (85 a 100), Satisfactorio (70 a 84), Básico (55 a 69), Bajo (0 a 54).',
+  sugerido: 'El "sugerido" es el promedio de lo que marcaron en la Entrevista y en la Ficha A para ese criterio. Es una ayuda: la decisión final es de ustedes.',
+  c_fortalezas: 'Lo mejor del proyecto, con la evidencia que vieron (por ejemplo: "el probador funcionó con nuestro rostro").',
+  c_debilidades: 'Lo que está flojo o falta, también con evidencia.',
+  c_riesgos: 'Qué podría dañarse o volverse difícil si el proyecto crece o pasa a uso real (por ejemplo: sin pruebas, código muy acoplado, datos sin proteger).',
+  c_recomendaciones: 'Qué harían primero y por qué. Ordénenlas de la más importante a la menos importante.',
+  c_no_verificadas: 'Lo que el equipo afirma (en el póster o de palabra) pero ustedes no pudieron comprobar. Quedan como declaradas (D).',
+};
 </script>
 <script>
 {
@@ -1523,18 +1595,22 @@ function renderB() {
     <div class="row" style="justify-content:space-between">
       <input type="text" data-k="pt:${x.id}:nombre" value="${esc(x.nombre)}" aria-label="Nombre del patrón" style="font-weight:700;font-size:17px;flex:1 1 200px">
       <button class="del" data-a="ptdel" data-id="${x.id}" aria-label="Eliminar patrón">✕</button></div>
+    ${PATRON_INFO[normPatron(x.nombre)] ? `<p class="exp"><b>Qué es</b>${esc(PATRON_INFO[normPatron(x.nombre)])}</p>` : ''}
     <div class="seg sm">${TIPOS.map(t => `<button data-a="pttipo" data-id="${x.id}" data-v="${t}" class="${x.tipo === t ? 'on' : ''}">${t}</button>`).join('')}</div>
+    <p class="hint">${esc(FICHA_B_AYUDA.origen)} ${esc(FICHA_B_AYUDA.dv)}</p>
     <div class="seg sm"><span class="hint" style="align-self:center;margin:0 4px 0 0">Origen</span>${['Propio', 'Framework'].map(t => `<button data-a="ptorig" data-id="${x.id}" data-v="${t}" class="${x.origen === t ? 'on' : ''}">${t}</button>`).join('')}
       <span class="hint" style="align-self:center;margin:0 4px 0 12px">Evidencia</span>${['D', 'V'].map(t => `<button data-a="ptdv" data-id="${x.id}" data-v="${t}" class="${x.dv === t ? 'on' : ''}">${t}</button>`).join('')}</div>
     <div class="grid2">
-      <div><label class="f">Dónde se aplica (módulo, clase)</label><textarea data-k="pt:${x.id}:donde">${esc(x.donde)}</textarea></div>
-      <div><label class="f">Para qué: problema que resuelve</label><textarea data-k="pt:${x.id}:para_que">${esc(x.para_que)}</textarea></div>
-      <div><label class="f">Costo que agrega</label><textarea data-k="pt:${x.id}:costo">${esc(x.costo)}</textarea></div>
-      <div><label class="f">¿Justifica el costo? ¿Por qué?</label>
+      <div><label class="f">Dónde se aplica (módulo, clase)</label><p class="fh">${esc(FICHA_B_AYUDA.donde)}</p><textarea data-k="pt:${x.id}:donde">${esc(x.donde)}</textarea></div>
+      <div><label class="f">Para qué: problema que resuelve</label><p class="fh">${esc(FICHA_B_AYUDA.para_que)}</p><textarea data-k="pt:${x.id}:para_que">${esc(x.para_que)}</textarea></div>
+      <div><label class="f">Costo que agrega</label><p class="fh">${esc(FICHA_B_AYUDA.costo)}</p><textarea data-k="pt:${x.id}:costo">${esc(x.costo)}</textarea></div>
+      <div><label class="f">¿Justifica el costo? ¿Por qué?</label><p class="fh">${esc(FICHA_B_AYUDA.justifica)}</p>
         <div class="seg sm" style="margin-top:0">${[['Sí', 'var(--ok)'], ['Parcial', 'var(--mid)'], ['No', 'var(--red)']].map(([t, c]) => `<button data-a="ptjus" data-id="${x.id}" data-v="${t}" class="${x.justifica === t ? 'on' : ''}" style="--c:${c}">${t}</button>`).join('')}</div>
         <textarea data-k="pt:${x.id}:porque" style="margin-top:8px">${esc(x.porque)}</textarea></div>
     </div></div>`).join('') || '<div class="card">El póster no nombra patrones. Agréguenlos a medida que el equipo los muestre en el código.</div>';
   const p = PR();
+  $('#bIntro').textContent = FICHA_B_AYUDA.intro;
+  $('#bValExp').innerHTML = FICHA_B_AYUDA.valoracion.map(([t, d]) => `<li><b>${esc(t)}:</b> ${esc(d)}</li>`).join('');
   $('#bVal').innerHTML = VAL_B.map(v => `<button data-a="bval" data-v="${esc(v)}" class="${p.b_valoracion === v ? 'on' : ''}">${v}</button>`).join('');
   setVal($('#fBCom'), p.b_comentario);
 }
@@ -1548,14 +1624,16 @@ function renderC() {
   $('#critList').innerHTML = s.cs.map(c => {
     const sg = sugerida(c.clave), desc = CRITERIOS.find(x => x[0] === c.clave)[3];
     return `<div class="card crit"><div class="head"><b>${esc(c.clave)}. ${esc(c.nombre)}</b><span>Peso ${c.peso} % · aporta ${c.nivel ? (c.nivel / 4 * c.peso).toFixed(1) : '–'}</span></div>
+      <p class="exp"><b>Qué evalúa</b>${esc(CRIT_EXPLICA[c.clave] || '')}</p>
       <p class="cal"><b>Para un proyecto de aula:</b> ${esc(CALIBRA[c.clave] || '')}</p>
       <div class="levels">${[4, 3, 2, 1].map(n => `<button data-a="crit" data-id="${c.id}" data-v="${n}" class="${c.nivel === n ? 'on' : ''}"><i>${n}</i><span>${esc(desc[4 - n])}</span></button>`).join('')}</div>
-      <div class="sug">${sg ? `Sugerido por sus registros (${sg.k}): <b>${sg.n}</b> <button data-a="crit" data-id="${c.id}" data-v="${sg.n}">usar ${sg.n}</button>` : 'Sin registros todavía para este criterio.'}</div>
+      <div class="sug" title="${esc(FICHA_C_AYUDA.sugerido)}">${sg ? `Sugerido por lo que marcaron en la Entrevista y la Ficha A (${sg.k} registros): <b>${sg.n}</b> <button data-a="crit" data-id="${c.id}" data-v="${sg.n}">usar ${sg.n}</button>` : 'Sin registros todavía para este criterio.'}</div>
       <textarea data-k="s:${c.id}" placeholder="Justificación con evidencia">${esc(c.nota)}</textarea></div>`;
   }).join('');
   const p = PR();
   const C2 = [['c_fortalezas', 'Principales fortalezas'], ['c_debilidades', 'Principales debilidades'], ['c_riesgos', 'Riesgos técnicos para la evolución del producto'], ['c_recomendaciones', 'Recomendaciones priorizadas (qué haría primero y por qué)'], ['c_no_verificadas', 'Afirmaciones del equipo que no se pudieron verificar']];
-  $('#c2').innerHTML = C2.map(([k, t]) => `<div class="card"><label class="f" style="margin-top:0" for="f-${k}">${t}</label><textarea id="f-${k}" data-k="p:${k}">${esc(p[k])}</textarea></div>`).join('');
+  $('#calcExp').textContent = ' ' + FICHA_C_AYUDA.calculo + ' ' + FICHA_C_AYUDA.sugerido;
+  $('#c2').innerHTML = C2.map(([k, t]) => `<div class="card"><label class="f" style="margin-top:0" for="f-${k}">${t}</label><p class="fh">${esc(FICHA_C_AYUDA[k] || '')}</p><textarea id="f-${k}" data-k="p:${k}">${esc(p[k])}</textarea></div>`).join('');
   setVal($('#fConcepto'), p.c_concepto); contar();
 }
 function contar() { const n = ($('#fConcepto').value.trim().match(/\S+/g) || []).length; $('#wc').innerHTML = `<span class="${n && (n < 200 || n > 300) ? 'warn' : ''}">${n} palabras</span>`; }
@@ -1765,7 +1843,7 @@ document.addEventListener('input', e => {
     else if (t === 'ct' && ['nombre', 'correo'].includes(c)) { run(`UPDATE contacto SET ${c}=? WHERE id=?`, [v.trim(), +a]); actualizaMail(); }
   }, 350);
 });
-document.addEventListener('change', e => { const el = e.target; if (el.matches('input[type=radio][data-a=ctsel]')) ACT.ctsel(null, el, +el.dataset.id); });
+document.addEventListener('change', e => { const el = e.target; if (el.dataset.k && el.dataset.k.endsWith(':nombre') && el.dataset.k.startsWith('pt:')) setTimeout(() => keepScroll(renderB), 400); if (el.matches('input[type=radio][data-a=ctsel]')) ACT.ctsel(null, el, +el.dataset.id); });
 const critSel = () => `<label class="f" for="dCrit">Criterio</label><select id="dCrit">${CRITERIOS.map(c => `<option value="${c[0]}">${c[0]} · ${esc(c[1])}</option>`).join('')}</select>`;
 function dialog(title, bodyHtml, onOk, okTxt = 'Guardar') {
   $('#dlgT').textContent = title; $('#dlgBody').innerHTML = bodyHtml; $('#dlgOk').textContent = okTxt; $('#dlg').classList.add('on');
