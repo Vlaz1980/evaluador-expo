@@ -1,0 +1,22 @@
+EVALUADOR EXPO SOFTWARE 2026-2 - Instrucciones para los grupos
+
+1. Abran el enlace de la app en Chrome (Android o PC).
+2. En "Inicio", toquen el proyecto que evalúa su grupo (P1 a P6).
+3. En el stand: pestaña "Entrevista" (verificar en la demo + preguntas).
+   Cada campo tiene un micrófono para dictar.
+4. Después: llenen Ficha A, Ficha B y Ficha C (rúbrica oficial C1-C8, niveles 1-4).
+   En Ficha C, "Armar borrador" redacta el concepto técnico con lo registrado.
+5. Pestaña "Enviar": escriban el correo del Ing. Jairo Seoanes y toquen
+   "Enviar PDF por correo" -> elijan Gmail (el PDF va adjunto).
+   "Copiar fila de la matriz" sirve para la Matriz comparativa.xlsx.
+
+Los datos quedan guardados en el navegador de cada dispositivo (SQLite).
+Al terminar, "Descargar base de datos" deja una copia.
+
+PUBLICARLA PARA LOS COMPAÑEROS (GitHub Pages, 3 minutos):
+- github.com -> New repository -> nombre: evaluador-expo -> Public -> Create.
+- "uploading an existing file" -> suban Evaluador_Expo_Software.html
+  renombrado como index.html -> Commit.
+- Settings -> Pages -> Branch: main / (root) -> Save.
+- En 1-2 minutos queda en: https://SU-USUARIO.github.io/evaluador-expo/
+  Compartan ese enlace por WhatsApp.
